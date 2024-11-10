@@ -53,7 +53,7 @@ Abra o Arduino IDE e vá em:
 
 ### 2. Instalar Bibliotecas Necessárias
 
-- ESP8266WiFi e Adafruit MQTT Library**: 
+- ESP8266WiFi e Adafruit MQTT Library: 
   - No Arduino IDE, vá em Sketch > Incluir Biblioteca > Gerenciar Bibliotecas.
   - Pesquise por ESP8266WiFi e instale, caso ainda não esteja instalada.
   - Depois, pesquise por Adafruit MQTT Library e instale a biblioteca.
