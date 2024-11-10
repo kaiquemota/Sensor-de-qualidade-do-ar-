@@ -30,18 +30,25 @@ Este projeto tem como objetivo monitorar gases poluentes em ambientes industriai
 ### 1. Configurar o Arduino IDE para a ESP8266
 
 Instale o Arduino IDE: Se ainda não tiver o Arduino IDE, baixe e instale a partir de [arduino.cc](https://www.arduino.cc/en/software).
-Adicionar a placa ESP8266: Abra o Arduino IDE e vá em:
-   - Arquivo > Preferências.
+<br />
+Adicione a placa ESP8266 
+<br />
+Abra o Arduino IDE e vá em:
+   - Arquivo > Preferências
    - Em URLs adicionais para Gerenciadores de Placas, insira o seguinte link: 
      ```
      http://arduino.esp8266.com/stable/package_esp8266com_index.json
      ```
    - Clique em OK.
+<br />
      Instalar a placa ESP8266:
+     <br />
    - Vá para Ferramentas > Placa > Gerenciador de Placas.
+     <br />
    - Pesquise por ESP8266 e instale a versão mais recente da biblioteca ESP8266 by ESP8266 Community.
-
-Selecionar a placa correta:
+<br /> 
+    Selecionar a placa correta:
+<br />
    - Em Ferramentas > Placa, selecione NodeMCU 1.0 (ESP-12E Module).
 
 ### 2. Instalar Bibliotecas Necessárias
