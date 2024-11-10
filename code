@@ -1,0 +1,96 @@
+#include <ESP8266WiFi.h>
+#include <Adafruit_MQTT.h>
+#include <Adafruit_MQTT_Client.h>
+
+#define gasSensorPin A0  
+#define gasLimit 800    
+#define ledPin D8         // Definindo o pino do LED (D8)
+
+const char* wifiSSID = "Marluce superior 2.4G";  
+const char* wifiPassword = "Marluce2022@";
+
+#define AIO_SERVER      "io.adafruit.com"
+#define AIO_SERVERPORT  1883                
+#define AIO_USERNAME    "Kaique00"  
+#define AIO_KEY         "aio_Zlnp907qu2LG9usC6f2cNQUSWAaB"  
+
+WiFiClient netClient;
+Adafruit_MQTT_Client mqttClient(&netClient, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
+
+Adafruit_MQTT_Publish gasFeed = Adafruit_MQTT_Publish(&mqttClient, AIO_USERNAME "/feeds/gaslevel");
+Adafruit_MQTT_Publish statusFeed = Adafruit_MQTT_Publish(&mqttClient, AIO_USERNAME "/feeds/gasstatus");
+
+void connectMQTT() {
+  int8_t connection;
+ 
+  while ((connection = mqttClient.connect()) != 0) {
+    mqttClient.disconnect();
+    delay(5000);  
+  }
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  Serial.print("Conectando a ");
+  Serial.println(wifiSSID);
+  WiFi.begin(wifiSSID, wifiPassword);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConectado ao Wi-Fi!");
+
+  connectMQTT();
+ 
+  pinMode(gasSensorPin, INPUT);
+  pinMode(ledPin, OUTPUT);     // Configura o pino do LED como saída
+  digitalWrite(ledPin, LOW);   // LED começa desligado
+}
+
+void loop() {
+  if (!mqttClient.connected()) {
+    connectMQTT();
+  }
+
+  mqttClient.ping();
+
+  int gasReadings[20];  
+  int gasTotal = 0;    
+  int gasAverage = 0;  
+
+  for (int i = 0; i < 20; i++) {
+    gasReadings[i] = analogRead(gasSensorPin);
+    delay(100);  
+  }
+
+  for (int i = 0; i < 20; i++) {
+    gasTotal += gasReadings[i];
+  }
+
+  gasAverage = gasTotal / 20;
+ 
+  Serial.print("Nível de Gás = ");
+  Serial.print(gasAverage);
+  Serial.println(" unidades");
+
+  if (!gasFeed.publish(gasAverage)) {
+    Serial.println("Erro ao enviar nível de gás");
+  }
+
+  if (gasAverage > gasLimit) {
+    if (!statusFeed.publish("Nível Perigoso!")) {
+      Serial.println("Erro ao enviar status de gás");
+    }
+    Serial.println("Atenção: Nível Perigoso!");
+    digitalWrite(ledPin, HIGH);  // Acende o LED no nível perigoso
+  } else {
+    if (!statusFeed.publish("Nível Seguro")) {
+      Serial.println("Erro ao enviar status de gás");
+    }
+    Serial.println("Nível Seguro");
+    digitalWrite(ledPin, LOW);   // Apaga o LED quando estiver seguro
+  }
+
+  delay(5000);
+}
